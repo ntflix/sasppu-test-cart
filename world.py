@@ -13,15 +13,18 @@ class World:
     world_size_tiles: tuple[int, int]
     screen_size: tuple[int, int]
 
-    def __init__(self, tile_size: int, screen_width: int, screen_height: int):
+    def __init__(
+        self,
+        tile_size: int,
+        world_size_tiles: tuple[int, int],
+        screen_width: int,
+        screen_height: int,
+    ):
         self.tile_size = tile_size
         self.screen_size = (screen_width, screen_height)
         self.screen_center_x = self.screen_size[0] // 2
         self.screen_center_y = self.screen_size[1] // 2
-        self.world_size_tiles = (
-            self.screen_size[0] // self.tile_size,
-            self.screen_size[1] // self.tile_size,
-        )
+        self.world_size_tiles = world_size_tiles
         self.player: Player | None = None
         self.player_sprite: Sprite | None = None
         # map from (tile_x, tile_y) to sprite

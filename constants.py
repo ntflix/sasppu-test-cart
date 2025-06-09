@@ -1,0 +1,6 @@
+SCREEN_WIDTH, SCREEN_HEIGHT = 240, 240
+SPRITE_WIDTH, SPRITE_HEIGHT = 64, 64
+
+ASSET_PATH = "./apps/saspputest/"
+SPRITE_FILENAME = "hedhog.bin"
+# SPRITE_FILENAME = "hedhog-nopoop.bin"

@@ -1,6 +1,7 @@
 from sasppu import Sprite
 
 from .direction import Direction, DirectionTuple
+from .constants import SPRITE_WIDTH
 
 GraphicsOffset = int
 
@@ -16,12 +17,12 @@ class Player:
     directional_sprites: dict[Direction, GraphicsOffset] = {
         DirectionTuple.N: 0,
         DirectionTuple.S: 0,
-        DirectionTuple.E: 64,
-        DirectionTuple.W: 64,
-        DirectionTuple.NE: 64,
-        DirectionTuple.NW: 64,
-        DirectionTuple.SE: 64,
-        DirectionTuple.SW: 64,
+        DirectionTuple.E: SPRITE_WIDTH,
+        DirectionTuple.W: SPRITE_WIDTH,
+        DirectionTuple.NE: SPRITE_WIDTH,
+        DirectionTuple.NW: SPRITE_WIDTH,
+        DirectionTuple.SE: SPRITE_WIDTH,
+        DirectionTuple.SW: SPRITE_WIDTH,
     }
 
     def __init__(self, with_sprite: Sprite, graphics_x: int, x: int = 0, y: int = 0):

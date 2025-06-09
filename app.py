@@ -16,9 +16,14 @@ from system.scheduler.events import RequestStopAppEvent
 from .direction import Direction, DirectionTuple
 from .player import Player
 from .world import World  # camera and world management
-
-ASSET_PATH = "./apps/saspputest/"
-SCREEN_WIDTH, SCREEN_HEIGHT = 240, 240
+from .constants import (
+    SPRITE_WIDTH,
+    SPRITE_HEIGHT,
+    SCREEN_WIDTH,
+    SCREEN_HEIGHT,
+    ASSET_PATH,
+    SPRITE_FILENAME,
+)
 
 
 class SASPPUTest(SASPPUApp):
@@ -52,7 +57,10 @@ class SASPPUTest(SASPPUApp):
         # setup world camera
         # use SCREEN_WIDTH/HEIGHT from sasppu for world dimensions
         self.world = World(
-            tile_size=64, screen_width=SCREEN_WIDTH, screen_height=SCREEN_HEIGHT
+            tile_size=SPRITE_WIDTH,
+            world_size_tiles=(8, 8),
+            screen_width=SCREEN_WIDTH,
+            screen_height=SCREEN_HEIGHT,
         )
         self.world.set_player(self.player)
         # register world objects
@@ -87,9 +95,9 @@ class SASPPUTest(SASPPUApp):
         self.ms.window_2_left = 180
         self.ms.window_2_right = 230
 
-        with open(ASSET_PATH + "hedhog.bin", "rb") as f:
+        with open(ASSET_PATH + SPRITE_FILENAME, "rb") as f:
             data = f.read()
-            sasppu.blit_sprite(0, 0, 64 * 4, 64, data, False)
+            sasppu.blit_sprite(0, 0, SPRITE_WIDTH * 4, SPRITE_HEIGHT, data, False)
 
         # with open(ASSET_PATH + "bg.bin", "rb") as f:
         #    sasppu.blit_background(0, 0, 256, 256, f.read())
@@ -105,8 +113,8 @@ class SASPPUTest(SASPPUApp):
             oam=0,
             x=104,
             y=104,
-            width=64,
-            height=64,
+            width=SPRITE_WIDTH,
+            height=SPRITE_HEIGHT,
             graphics_x=0,
             graphics_y=0,
         )
@@ -120,8 +128,8 @@ class SASPPUTest(SASPPUApp):
                 oam=i,
                 x=pos[0],
                 y=pos[1],
-                width=64,
-                height=64,
+                width=SPRITE_WIDTH,
+                height=SPRITE_HEIGHT,
                 graphics_x=128,
                 graphics_y=0,
             )
@@ -135,8 +143,8 @@ class SASPPUTest(SASPPUApp):
                 oam=i,
                 x=pos[0],
                 y=pos[1],
-                width=64,
-                height=64,
+                width=SPRITE_WIDTH,
+                height=SPRITE_HEIGHT,
                 graphics_x=192,
                 graphics_y=0,
             )
