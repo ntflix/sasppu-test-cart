@@ -66,6 +66,18 @@ class World:
             raise ValueError(f"Tile {key} already occupied")
         self.objects[key] = sprite
 
+    def register_object_at_tile(self, tile_x: int, tile_y: int, sprite: Sprite) -> None:
+        """Place a sprite at a given tile position on the tile grid."""
+        key = (tile_x, tile_y)
+        if key in self.objects:
+            print(f"Tile {key} already occupied")
+            return
+        self.objects[key] = sprite
+        # set sprite world position (in pixels)
+        sprite.x = tile_x * self.tile_size
+        sprite.y = tile_y * self.tile_size
+        print(f"Placing sprite at tile {key} with xy ({sprite.x}, {sprite.y})")
+
     def register_object_random(self, sprite: Sprite) -> None:
         """Place a sprite at a random position on the tile grid.
         Automatically avoids occupied tiles."""

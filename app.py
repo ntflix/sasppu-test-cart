@@ -257,12 +257,32 @@ class SASPPUTest(SASPPUApp):
             if self.button_states.get(BUTTON_TYPES["UP"]):
                 pass
             elif self.button_states.get(BUTTON_TYPES["DOWN"]):
-                pass
+                self.special_action()
 
             # self.button_states.clear()
 
             await render_update()
             # await asyncio.sleep(1)
+
+    def special_action(self):
+        """Perform a special action"""
+        # add a poop
+        spr = self.init_sprite(
+            oam=len(self.all_sprites),
+            x=-200,
+            y=-200,
+            width=SPRITE_WIDTH,
+            height=SPRITE_HEIGHT,
+            graphics_x=0,
+            graphics_y=SPRITE_HEIGHT * 1,
+        )
+        self.poos.append(spr)
+        assert self.world.player is not None, "Player must be set in the world"
+        self.world.register_object_at_tile(
+            tile_x=self.world.player.x // self.world.tile_size,
+            tile_y=self.world.player.y // self.world.tile_size,
+            sprite=spr,
+        )
 
     def draw(self):
         cur_time = time.ticks_ms()
