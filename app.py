@@ -130,7 +130,7 @@ class SASPPUTest(SASPPUApp):
                 y=pos[1],
                 width=SPRITE_WIDTH,
                 height=SPRITE_HEIGHT,
-                graphics_x=128,
+                graphics_x=SPRITE_WIDTH * 2,
                 graphics_y=0,
             )
             self.trees.append(spr)
@@ -145,7 +145,7 @@ class SASPPUTest(SASPPUApp):
                 y=pos[1],
                 width=SPRITE_WIDTH,
                 height=SPRITE_HEIGHT,
-                graphics_x=192,
+                graphics_x=SPRITE_WIDTH * 3,
                 graphics_y=0,
             )
             flip_x = random.choice([True, False])
