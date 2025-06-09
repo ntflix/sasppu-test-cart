@@ -8,9 +8,10 @@ from app import SASPPUApp
 import sasppu
 import time
 
-from events.input import BUTTON_TYPES, ButtonDownEvent, ButtonUpEvent
+from events.input import BUTTON_TYPES, ButtonDownEvent, Buttons
 from system.eventbus import eventbus
 from system.scheduler.events import RequestStopAppEvent
+
 
 from .player import Player
 from .world import World  # camera and world management
@@ -35,8 +36,8 @@ class SASPPUTest(SASPPUApp):
 
     def __init__(self):
         super().__init__()
+        self.button_states = Buttons(self)
         self.request_fast_updates = True
-        eventbus.on(ButtonDownEvent, self._handle_buttondown, self)
         self.exit = False
         self.ms = sasppu.MainState()
         self.ms.bind()
@@ -55,7 +56,7 @@ class SASPPUTest(SASPPUApp):
         self.world.set_player(self.player)
         # register world objects
         for obj in self.trees + self.caves:
-            self.world.register_object(obj.x, obj.y, obj)
+            self.world.register_object_random(obj)
 
         self.ms.mainscreen_colour = sasppu.TRANSPARENT_BLACK
         self.ms.flags = (
@@ -190,6 +191,22 @@ class SASPPUTest(SASPPUApp):
 
     async def run(self, render_update):
         while not self.exit:
+
+            if self.button_states.get(BUTTON_TYPES["CANCEL"]):
+                self.player.move(-1, -1)
+            if self.button_states.get(BUTTON_TYPES["CONFIRM"]):
+                self.player.move(1, 1)
+            elif self.button_states.get(BUTTON_TYPES["LEFT"]):
+                self.player.move(-1, 1)
+            elif self.button_states.get(BUTTON_TYPES["RIGHT"]):
+                self.player.move(1, -1)
+            elif self.button_states.get(BUTTON_TYPES["UP"]):
+                pass
+            elif self.button_states.get(BUTTON_TYPES["DOWN"]):
+                pass
+
+            # self.button_states.clear()
+
             await render_update()
             # await asyncio.sleep(1)
 
@@ -204,18 +221,6 @@ class SASPPUTest(SASPPUApp):
         # self.cs.flags = sasppu.CMathState.FADE_ENABLE
         # self.cs.fade = int((math.sin(cur_time / 1000.0) + 1) * 127)
         # print("fps:", display.get_fps())
-
-    def _handle_buttondown(self, event: ButtonDownEvent):
-        if BUTTON_TYPES["CANCEL"] in event.button:
-            self._cleanup()
-        elif BUTTON_TYPES["LEFT"] in event.button:
-            self.player.move(-1, 0)
-        elif BUTTON_TYPES["RIGHT"] in event.button:
-            self.player.move(1, 0)
-        elif BUTTON_TYPES["UP"] in event.button:
-            self.player.move(0, -1)
-        elif BUTTON_TYPES["DOWN"] in event.button:
-            self.player.move(0, 1)
 
     def minimise(self):
         # Close this app each time

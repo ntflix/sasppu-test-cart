@@ -55,9 +55,9 @@ class Player:
         assert (move_x != 0) or (
             move_y != 0
         ), "Either move_x or move_y must be non-zero."
-        assert (move_x == 0) or (
-            move_y == 0
-        ), "Only one of move_x or move_y can be non-zero at a time."
+        # assert (move_x == 0) or (
+        #     move_y == 0
+        # ), "Only one of move_x or move_y can be non-zero at a time."
 
         if move_x < 0:
             self.facing = Direction.RIGHT
