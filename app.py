@@ -31,6 +31,7 @@ class SASPPUTest(SASPPUApp):
     player: Player
     caves: list[Sprite] = []
     trees: list[Sprite] = []
+    poos: list[Sprite] = []
     # camera/world
     world: World
     # state
@@ -43,12 +44,12 @@ class SASPPUTest(SASPPUApp):
     @property
     def all_sprites(self) -> list[Sprite]:
         """Return a list of all sprites in the app."""
-        return [self.player.sprite] + self.trees + self.caves
+        return [self.player.sprite] + self.trees + self.caves + self.poos
 
     @property
     def all_sprites_non_player(self) -> list[Sprite]:
         """Return a list of all sprites except the player."""
-        return self.trees + self.caves
+        return self.trees + self.caves + self.poos
 
     def __init__(self):
         super().__init__()
@@ -64,6 +65,7 @@ class SASPPUTest(SASPPUApp):
         self.init_player()
         self.init_trees()
         self.init_caves()
+        self.init_poos()
         # setup world camera
         # use SCREEN_WIDTH/HEIGHT from sasppu for world dimensions
         self.world = World(
@@ -107,7 +109,7 @@ class SASPPUTest(SASPPUApp):
 
         with open(ASSET_PATH + SPRITE_FILENAME, "rb") as f:
             data = f.read()
-            sasppu.blit_sprite(0, 0, SPRITE_WIDTH * 4, SPRITE_HEIGHT, data, False)
+            sasppu.blit_sprite(0, 0, SPRITE_WIDTH * 4, SPRITE_HEIGHT * 2, data, False)
 
         # with open(ASSET_PATH + "bg.bin", "rb") as f:
         #    sasppu.blit_background(0, 0, 256, 256, f.read())
@@ -167,6 +169,23 @@ class SASPPUTest(SASPPUApp):
                 spr.flags = spr.FLIP_X + spr.ENABLED
             self.caves.append(spr)
 
+    def init_poos(self, n: int = 10):
+        self.poos = []
+        # create poo sprites; world placement will assign positions
+        start = len(self.all_sprites)
+        print(f"start at {start} for {n} poos, end at {start + n}")
+        for i in range(start, start + n):
+            spr = self.init_sprite(
+                oam=i,
+                x=0,
+                y=0,
+                width=SPRITE_WIDTH,
+                height=SPRITE_HEIGHT,
+                graphics_x=0,
+                graphics_y=SPRITE_HEIGHT * 1,
+            )
+            self.poos.append(spr)
+
     def init_sprite(
         self,
         oam: int,
@@ -177,6 +196,9 @@ class SASPPUTest(SASPPUApp):
         graphics_x: int = 0,
         graphics_y: int = 0,
     ):
+        print(
+            f"placing sprite at ({x}, {y}) with graphics ({graphics_x}, {graphics_y})"
+        )
         spr = sasppu.oam[oam]
         spr.width = width
         spr.height = height

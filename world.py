@@ -76,6 +76,9 @@ class World:
         key = self.free_tiles.pop()
         tx, ty = key
         self.objects[key] = sprite
+        print(
+            f"Going to attempt to place sprite at tile {key} ({tx}, {ty}) at {tx * self.tile_size}, {ty * self.tile_size})"
+        )
         # set sprite world position (in pixels)
         sprite.x = tx * self.tile_size
         sprite.y = ty * self.tile_size
