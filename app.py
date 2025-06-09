@@ -13,6 +13,7 @@ from system.eventbus import eventbus
 from system.scheduler.events import RequestStopAppEvent
 
 
+from .direction import Direction, DirectionTuple
 from .player import Player
 from .world import World  # camera and world management
 
@@ -191,16 +192,37 @@ class SASPPUTest(SASPPUApp):
 
     async def run(self, render_update):
         while not self.exit:
+            movement_button_states: dict[Direction, bool] = {
+                DirectionTuple.N: self.button_states.get(BUTTON_TYPES["CANCEL"])
+                and self.button_states.get(BUTTON_TYPES["RIGHT"]),
+                DirectionTuple.S: self.button_states.get(BUTTON_TYPES["LEFT"])
+                and self.button_states.get(BUTTON_TYPES["CONFIRM"]),
+                DirectionTuple.E: self.button_states.get(BUTTON_TYPES["RIGHT"])
+                and self.button_states.get(BUTTON_TYPES["CONFIRM"]),
+                DirectionTuple.W: self.button_states.get(BUTTON_TYPES["CANCEL"])
+                and self.button_states.get(BUTTON_TYPES["LEFT"]),
+            }
 
-            if self.button_states.get(BUTTON_TYPES["CANCEL"]):
-                self.player.move(-1, -1)
-            if self.button_states.get(BUTTON_TYPES["CONFIRM"]):
-                self.player.move(1, 1)
-            elif self.button_states.get(BUTTON_TYPES["LEFT"]):
-                self.player.move(-1, 1)
-            elif self.button_states.get(BUTTON_TYPES["RIGHT"]):
-                self.player.move(1, -1)
-            elif self.button_states.get(BUTTON_TYPES["UP"]):
+            if not (
+                movement_button_states.get(DirectionTuple.N)
+                or movement_button_states.get(DirectionTuple.S)
+                or movement_button_states.get(DirectionTuple.E)
+                or movement_button_states.get(DirectionTuple.W)
+            ):
+                # only calculate diagonal movement if no cardinal direction is pressed
+                diagonal_movement_button_states: dict[Direction, bool] = {
+                    DirectionTuple.NW: self.button_states.get(BUTTON_TYPES["CANCEL"]),
+                    DirectionTuple.NE: self.button_states.get(BUTTON_TYPES["RIGHT"]),
+                    DirectionTuple.SW: self.button_states.get(BUTTON_TYPES["LEFT"]),
+                    DirectionTuple.SE: self.button_states.get(BUTTON_TYPES["CONFIRM"]),
+                }
+                movement_button_states.update(diagonal_movement_button_states)
+
+            for direction, pressed in movement_button_states.items():
+                if pressed:
+                    self.player.move(direction)
+
+            if self.button_states.get(BUTTON_TYPES["UP"]):
                 pass
             elif self.button_states.get(BUTTON_TYPES["DOWN"]):
                 pass

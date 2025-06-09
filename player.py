@@ -1,15 +1,28 @@
 from sasppu import Sprite
 
-from .direction import Direction
+from .direction import Direction, DirectionTuple
+
+GraphicsOffset = int
 
 
 class Player:
     x: int
     y: int
-    facing: str
+    facing: Direction
     graphics_x: int
     sprite_offset: int
     sprite: Sprite
+
+    directional_sprites: dict[Direction, GraphicsOffset] = {
+        DirectionTuple.N: 0,
+        DirectionTuple.S: 0,
+        DirectionTuple.E: 64,
+        DirectionTuple.W: 64,
+        DirectionTuple.NE: 64,
+        DirectionTuple.NW: 64,
+        DirectionTuple.SE: 64,
+        DirectionTuple.SW: 64,
+    }
 
     def __init__(self, with_sprite: Sprite, graphics_x: int, x: int = 0, y: int = 0):
         self.sprite = with_sprite
@@ -17,22 +30,24 @@ class Player:
         self.sprite.graphics_x = self.graphics_x
         self.x = x
         self.y = y
-        self.facing = Direction.TOP
+        self.facing = DirectionTuple.N
         self.sprite_offset = 0
 
     def __calculate_offset(self):
-        if (self.facing == Direction.TOP) or (self.facing == Direction.BOTTOM):
-            self.sprite_offset = 0
-        elif (self.facing == Direction.LEFT) or (self.facing == Direction.RIGHT):
-            self.sprite_offset = 64
-
+        """Calculate the sprite offset based on the current facing direction."""
+        self.sprite_offset = self.directional_sprites[self.facing]
         self.sprite.graphics_x = self.graphics_x + self.sprite_offset
 
     def __calculate_flags(self):
+        print(f"Facing {DirectionTuple.to_string(self.facing)}")
         flags: list[int] = [self.sprite.ENABLED]
-        if self.facing == Direction.RIGHT:
+
+        parts = DirectionTuple.parts(self.facing)
+        if DirectionTuple.W in parts:
             flags.append(self.sprite.FLIP_X)
-        elif self.facing == Direction.TOP:
+        elif DirectionTuple.S in parts and not (
+            DirectionTuple.E in parts or DirectionTuple.W in parts
+        ):
             flags.append(self.sprite.FLIP_Y)
 
         self.sprite.flags = sum(flags)
@@ -47,30 +62,16 @@ class Player:
         """World Y coordinate of the player."""
         return self.y
 
-    def move(self, move_x: int, move_y: int):
-        """Moves the player in the specified direction.
+    def move(self, direction: Direction):
+        """Moves the player in the specified DirectionTuple.
         Either move_x or move_y must be non-zero.
         Only one of them can be non-zero at a time."""
 
-        assert (move_x != 0) or (
-            move_y != 0
-        ), "Either move_x or move_y must be non-zero."
-        # assert (move_x == 0) or (
-        #     move_y == 0
-        # ), "Only one of move_x or move_y can be non-zero at a time."
-
-        if move_x < 0:
-            self.facing = Direction.RIGHT
-        elif move_x > 0:
-            self.facing = Direction.LEFT
-        elif move_y < 0:
-            self.facing = Direction.BOTTOM
-        else:
-            self.facing = Direction.TOP
+        self.facing = direction
 
         self.__calculate_offset()
         self.__calculate_flags()
 
-        self.x += move_x * 8
-        self.y += move_y * 8
+        self.x += direction[0] * 2
+        self.y += direction[1] * 2
         # Positioning of sprite is handled by World; removed direct sprite.x/y assignments
