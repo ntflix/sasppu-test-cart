@@ -13,14 +13,25 @@ from system.eventbus import eventbus
 from system.scheduler.events import RequestStopAppEvent
 
 from .player import Player
+from .world import World  # camera and world management
 
 ASSET_PATH = "./apps/saspputest/"
+SCREEN_WIDTH, SCREEN_HEIGHT = 240, 240
 
 
 class SASPPUTest(SASPPUApp):
+    # entities
     player: Player
     caves: list[Sprite] = []
     trees: list[Sprite] = []
+    # camera/world
+    world: World
+    # state
+    request_fast_updates: bool
+    exit: bool
+    ms: sasppu.MainState
+    cs: sasppu.CMathState
+    bg0: sasppu.Background
 
     def __init__(self):
         super().__init__()
@@ -36,6 +47,15 @@ class SASPPUTest(SASPPUApp):
         self.init_player()
         self.init_trees()
         self.init_caves()
+        # setup world camera
+        # use SCREEN_WIDTH/HEIGHT from sasppu for world dimensions
+        self.world = World(
+            tile_size=64, screen_width=SCREEN_WIDTH, screen_height=SCREEN_HEIGHT
+        )
+        self.world.set_player(self.player)
+        # register world objects
+        for obj in self.trees + self.caves:
+            self.world.register_object(obj.x, obj.y, obj)
 
         self.ms.mainscreen_colour = sasppu.TRANSPARENT_BLACK
         self.ms.flags = (
@@ -75,14 +95,14 @@ class SASPPUTest(SASPPUApp):
         #     sasppu.blit_sprite(104, 104, 32 * 8, 32, f.read())
 
         green_bg_color = sasppu.rgb555(1, 12, 1)  # RGB555 goes from 0 to 31
-        sasppu.fill_background(0, 0, self.bg0.WIDTH, self.bg0.HEIGHT, green_bg_color)
+        sasppu.fill_background(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, green_bg_color)
 
     def init_player(self):
         spr = sasppu.oam[0]
         spr: Sprite = self.init_sprite(
             oam=0,
-            x=0,
-            y=0,
+            x=104,
+            y=104,
             width=64,
             height=64,
             graphics_x=0,
@@ -175,6 +195,8 @@ class SASPPUTest(SASPPUApp):
 
     def draw(self):
         cur_time = time.ticks_ms()
+        # update camera to center player and move world
+        self.world.update()
 
         # self.ms.flags = sasppu.MainState.CMATH_ENABLE
         # ms.window_1_left = int((math.sin(cur_time / 1300.0) + 1) * 64)

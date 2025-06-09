@@ -37,6 +37,16 @@ class Player:
 
         self.sprite.flags = sum(flags)
 
+    @property
+    def world_x(self) -> int:
+        """World X coordinate of the player."""
+        return self.x
+
+    @property
+    def world_y(self) -> int:
+        """World Y coordinate of the player."""
+        return self.y
+
     def move(self, move_x: int, move_y: int):
         """Moves the player in the specified direction.
         Either move_x or move_y must be non-zero.
@@ -63,6 +73,4 @@ class Player:
 
         self.x += move_x * 8
         self.y += move_y * 8
-
-        self.sprite.x = self.x
-        self.sprite.y = self.y
+        # Positioning of sprite is handled by World; removed direct sprite.x/y assignments
