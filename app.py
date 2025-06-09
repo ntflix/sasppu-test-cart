@@ -40,6 +40,16 @@ class SASPPUTest(SASPPUApp):
     cs: sasppu.CMathState
     bg0: sasppu.Background
 
+    @property
+    def all_sprites(self) -> list[Sprite]:
+        """Return a list of all sprites in the app."""
+        return [self.player.sprite] + self.trees + self.caves
+
+    @property
+    def all_sprites_non_player(self) -> list[Sprite]:
+        """Return a list of all sprites except the player."""
+        return self.trees + self.caves
+
     def __init__(self):
         super().__init__()
         self.button_states = Buttons(self)
@@ -64,7 +74,7 @@ class SASPPUTest(SASPPUApp):
         )
         self.world.set_player(self.player)
         # register world objects
-        for obj in self.trees + self.caves:
+        for obj in self.all_sprites_non_player:
             self.world.register_object_random(obj)
 
         self.ms.mainscreen_colour = sasppu.TRANSPARENT_BLACK
@@ -120,14 +130,16 @@ class SASPPUTest(SASPPUApp):
         )
         self.player = Player(with_sprite=spr, graphics_x=0)
 
-    def init_trees(self):
+    def init_trees(self, n: int = 20):
         self.trees = []
-        for i in range(1, 5):
-            pos = self.get_position_not_near_existing_sprites()
+        # create tree sprites; world placement will assign positions
+        start = len(self.all_sprites)
+        print(f"start at {start} for {n} trees, end at {start + n}")
+        for i in range(start, start + n):
             spr = self.init_sprite(
                 oam=i,
-                x=pos[0],
-                y=pos[1],
+                x=0,
+                y=0,
                 width=SPRITE_WIDTH,
                 height=SPRITE_HEIGHT,
                 graphics_x=SPRITE_WIDTH * 2,
@@ -135,14 +147,16 @@ class SASPPUTest(SASPPUApp):
             )
             self.trees.append(spr)
 
-    def init_caves(self):
+    def init_caves(self, n: int = 5):
         self.caves = []
-        for i in range(5, 8):
-            pos = self.get_position_not_near_existing_sprites()
+        # create tree sprites; world placement will assign positions
+        start = len(self.all_sprites)
+        print(f"start at {start} for {n} trees, end at {start + n}")
+        for i in range(start, start + n):
             spr = self.init_sprite(
                 oam=i,
-                x=pos[0],
-                y=pos[1],
+                x=0,
+                y=0,
                 width=SPRITE_WIDTH,
                 height=SPRITE_HEIGHT,
                 graphics_x=SPRITE_WIDTH * 3,
@@ -180,18 +194,6 @@ class SASPPUTest(SASPPUApp):
         x = random.randint(20, 220)
         y = random.randint(20, 220)
         return x, y
-
-    def get_position_not_near_existing_sprites(self, radius: int = 48):
-        """Get a random position that is not too close to existing sprites."""
-        while True:
-            pos = self.get_random_position()
-            too_close = False
-            for spr in self.trees + self.caves:
-                if abs(pos[0] - spr.x) < radius and abs(pos[1] - spr.y) < radius:
-                    too_close = True
-                    break
-            if not too_close:
-                return pos
 
     def _cleanup(self):
         eventbus.remove(ButtonDownEvent, self._handle_buttondown, self)
