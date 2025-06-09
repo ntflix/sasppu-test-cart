@@ -1,6 +1,7 @@
 {
-    "callable": "SASPPUTest",
-    "name": "SASPPU Test",
-    "category": "unknown",
-    "hidden": false
+  "callable": "SASPPUTest",
+  "name": "SASPPU Test",
+  "path": "apps.saspputest.app",
+  "category": "unknown",
+  "hidden": false
 }
